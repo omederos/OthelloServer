@@ -2,6 +2,10 @@ from django.test.testcases import TestCase
 from othello.models import *
 from othello.tests.utils import create_player
 
+class GameTests(TestCase):
+    def test_unicode(self):
+        g = Game.objects.create(player1='john1', player2='john2')
+        self.assertEqual(unicode(g), 'john1-john2-1')
 
 class GameManagerTests(TestCase):
     def test_create_non_existing_players(self):

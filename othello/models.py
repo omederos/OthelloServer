@@ -6,6 +6,9 @@ INIT_BOARD = '0000000000000000000000000001200000021000000000000000000000000000'
 class Player(models.Model):
     name = models.CharField(max_length=50)
 
+    def __unicode__(self):
+        return self.name
+
 
 class GameManager(models.Manager):
     def create(self, player1=None, player2=None, **kwargs):
@@ -13,7 +16,6 @@ class GameManager(models.Manager):
         Crea una juego. Si no existen los jugadores, tambien los crea
 
         """
-
         params = kwargs
 
         if player1 is not None:
