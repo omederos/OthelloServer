@@ -4,7 +4,7 @@ INIT_BOARD = '0000000000000000000000000001200000021000000000000000000000000000'
 
 
 class Player(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
 
     def __unicode__(self):
         return self.name
@@ -45,6 +45,26 @@ class GameManager(models.Manager):
         except:
             raise Exception('Game %s not found' % game_id)
 
+    def connect(self, p1, p2):
+        """
+
+        """
+        try:
+        # Getting a game that hasn't been started with the specified players
+            g = Game.objects.get(player1__name=p1,
+                player2__name=p2,
+                game_started=False
+            )
+        except Game.DoesNotExist:
+            # If the game does not exist, we create a new one
+            g = Game.objects.create(player1=p1, player2=p2)
+            return unicode(g)
+
+        # If the game already existed, then the other player is just
+        # connecting to it
+        g.start_game()
+        return unicode(g)
+
 
 class Game(models.Model):
     """
@@ -71,8 +91,15 @@ class Game(models.Model):
         self.game_finished = False
         self.board = INIT_BOARD
 
-    def is_ready_to_start(self):
-        return not self.game_started and self.player1 and self.player2
+    def start_game(self):
+        """
+        Initialize the game.
+
+        This method should be called when both players have been connected
+        to the game correctly.
+        """
+        self.game_started = True
+        self.save()
 
     def has_finished(self):
         return self.winner is not None

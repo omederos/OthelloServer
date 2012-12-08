@@ -23,7 +23,7 @@ class GameManagerTests(TestCase):
 
         # Making sure the game is created correctly
         self.assertEqual(len(g.board), 64)
-        self.assertTrue(g.is_ready_to_start())
+        self.assertFalse(g.game_started)
 
     def test_create_only_player_1(self):
         g = Game.objects.create(player1='john1')
@@ -39,7 +39,7 @@ class GameManagerTests(TestCase):
 
         # Making sure the game is created correctly
         self.assertEqual(len(g.board), 64)
-        self.assertFalse(g.is_ready_to_start())
+        self.assertFalse(g.game_started)
 
     def test_create_both_players_existing(self):
         create_player(name='john1')
@@ -58,7 +58,7 @@ class GameManagerTests(TestCase):
 
         # Making sure the game is created correctly
         self.assertEqual(len(g.board), 64)
-        self.assertTrue(g.is_ready_to_start())
+        self.assertFalse(g.game_started)
 
     def test_get_by_id_existent(self):
         create_game()
