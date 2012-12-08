@@ -2,10 +2,12 @@ from django.test.testcases import TestCase
 from othello.models import *
 from othello.tests.utils import create_player, create_game
 
+
 class GameTests(TestCase):
     def test_unicode(self):
         g = Game.objects.create(player1='john1', player2='john2')
         self.assertEqual(unicode(g), 'john1-john2-1')
+
 
 class GameManagerTests(TestCase):
     def test_create_non_existing_players(self):
@@ -84,3 +86,23 @@ class GameManagerTests(TestCase):
         with self.assertRaises(Exception) as ex:
             g = Game.objects.get_by_id('pepe-juan-1')
         self.assertEqual(ex.exception.message, 'Game pepe-juan-1 not found')
+
+    def test_connect(self):
+        game_id = Game.objects.connect('john', 'peter')
+        GAME_ID = 'john-peter-1'
+        self.assertEqual(game_id, GAME_ID)
+
+        # Make sure the game hasn't started yet!
+        g = Game.objects.get(id=1)
+        self.assertEqual(g.game_started, False)
+
+        # Second call. The remaining player is joining
+        game_id = Game.objects.connect('john', 'peter')
+        self.assertEqual(game_id, GAME_ID)
+
+        # Make sure no new games are created
+        self.assertEqual(Game.objects.count(), 1)
+        g = Game.objects.get(id=1)
+
+        # This game already started!
+        self.assertEqual(g.game_started, True)

@@ -3,6 +3,7 @@ from django.test.testcases import TestCase
 from django.utils import simplejson
 from othello.tests import utils
 
+
 class ConnectTests(TestCase):
     def test_POST_returns_error(self):
         r = self.client.post(path='/connect')

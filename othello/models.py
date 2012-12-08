@@ -47,7 +47,10 @@ class GameManager(models.Manager):
 
     def connect(self, p1, p2):
         """
+        Connects the specified players to a game
 
+        If the game already exists, it starts the game
+        If the game does not exist, it creates a new one
         """
         try:
         # Getting a game that hasn't been started with the specified players
@@ -55,14 +58,14 @@ class GameManager(models.Manager):
                 player2__name=p2,
                 game_started=False
             )
+
+            # If the game already existed, then the other player is just
+            # connecting to it
+            g.start_game()
         except Game.DoesNotExist:
             # If the game does not exist, we create a new one
             g = Game.objects.create(player1=p1, player2=p2)
-            return unicode(g)
 
-        # If the game already existed, then the other player is just
-        # connecting to it
-        g.start_game()
         return unicode(g)
 
 
@@ -87,9 +90,12 @@ class Game(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Game, self).__init__(*args, **kwargs)
-        self.game_started = False
-        self.game_finished = False
-        self.board = INIT_BOARD
+        # If we are creating the model (instead of editing it)
+        # TODO: Use post-save signal and check the 'created' flag
+        if not self.pk:
+            self.game_started = False
+            self.game_finished = False
+            self.board = INIT_BOARD
 
     def start_game(self):
         """

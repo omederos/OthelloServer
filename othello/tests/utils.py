@@ -3,6 +3,7 @@ from othello.models import Player, Game
 PLAYER1_NAME = 'john'
 PLAYER2_NAME = 'peter'
 
+
 def create_player(name=None):
     if name is None:
         name = PLAYER1_NAME
