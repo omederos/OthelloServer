@@ -18,8 +18,22 @@ def connect(request):
     except Exception, e:
         return ajax_response(error=e.message)
 
-    d = {'game': game_id}
-    return ajax_response(**d)
+    return ajax_response(game=game_id)
+
+
+def get_board(request):
+    if request.method != 'GET':
+        return ajax_response(error='GET method should be used instead of POST')
+    if not 'game' in request.GET:
+        return ajax_response(
+            error='Incorrect parameters. It should be: game=juan-pedro-1'
+        )
+    try:
+        g = Game.objects.get_by_id(request.GET['game'])
+    except Exception, e:
+        return ajax_response(error=e.message)
+
+    return ajax_response(board=g.board)
 
 
 def ajax_response(error=None, **kwargs):
