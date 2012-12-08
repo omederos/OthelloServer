@@ -1,6 +1,6 @@
 from django.test.testcases import TestCase
 from othello.models import *
-from othello.tests.utils import create_player
+from othello.tests.utils import create_player, create_game
 
 class GameTests(TestCase):
     def test_unicode(self):
@@ -59,3 +59,28 @@ class GameManagerTests(TestCase):
         # Making sure the game is created correctly
         self.assertEqual(len(g.board), 64)
         self.assertTrue(g.is_ready_to_start())
+
+    def test_get_by_id_existent(self):
+        create_game()
+        g = Game.objects.get_by_id('john-peter-1')
+        self.assertTrue(g)
+        self.assertEqual(g.player1.name, 'john')
+        self.assertEqual(g.player2.name, 'peter')
+
+    def test_get_by_id_game_id_does_not_match(self):
+        create_game()
+        with self.assertRaises(Exception) as ex:
+            g = Game.objects.get_by_id('john-peter-10')
+        self.assertEqual(ex.exception.message, 'Game john-peter-10 not found')
+
+    def test_get_by_id_players_in_reverse_order(self):
+        create_game()
+        with self.assertRaises(Exception) as ex:
+            g = Game.objects.get_by_id('peter-john-1')
+        self.assertEqual(ex.exception.message, 'Game peter-john-1 not found')
+
+    def test_get_by_id_players_do_not_match(self):
+        create_game()
+        with self.assertRaises(Exception) as ex:
+            g = Game.objects.get_by_id('pepe-juan-1')
+        self.assertEqual(ex.exception.message, 'Game pepe-juan-1 not found')

@@ -27,6 +27,24 @@ class GameManager(models.Manager):
 
         return super(GameManager, self).create(**params)
 
+    def get_by_id(self, game_id):
+        """
+        Returns the game that has the specified ID
+
+        Example of a game ID: john-peter-3
+        """
+        splitted = game_id.strip().split('-')
+        if len(splitted) != 3:
+            raise Exception('Invalid game identifier \'%s\'' % game_id)
+        p1 = splitted[0]
+        p2 = splitted[1]
+        game = splitted[2]
+
+        try:
+            return self.get(player1__name=p1, player2__name=p2, id=game)
+        except:
+            raise Exception('Game %s not found' % game_id)
+
 
 class Game(models.Model):
     """
