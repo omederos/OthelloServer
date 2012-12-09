@@ -79,3 +79,55 @@ class GetBoardTests(TestCase):
 
         self.assertFalse('error' in d)
         self.assertTrue(d['board'], INIT_BOARD)
+
+
+class IsTurnTests(TestCase):
+    def test_POST_returns_error(self):
+        r = self.client.post(path='/is_turn')
+        d = simplejson.loads(r.content)
+
+        self.assertEqual(d['error'], 'GET method should be used instead of '
+                                     'POST')
+        self.assertFalse('status' in d)
+
+    def test_game_not_started_yet(self):
+        utils.create_game()
+        r = self.client.get(path='/is_turn?game=john-peter-1&player=john')
+        d = simplejson.loads(r.content)
+
+        self.assertEqual(d['error'], 'The game hasn\'t started yet. Make sure'
+                                     ' both players have been connected')
+        self.assertFalse('status' in d)
+
+    def test_non_existing_game(self):
+        utils.create_game()
+        r = self.client.get(path='/is_turn?game=john-peter-2&player=john')
+        d = simplejson.loads(r.content)
+
+        self.assertEqual(d['error'], 'Game john-peter-2 not found')
+        self.assertFalse('status' in d)
+
+    def test_non_existing_player(self):
+        utils.create_game(start_it=True)
+        r = self.client.get(path='/is_turn?game=john-peter-1&player=oscar')
+        d = simplejson.loads(r.content)
+
+        self.assertEqual(d['error'], 'The player oscar is not playing in this'
+                                     ' game')
+        self.assertFalse('status' in d)
+
+    def test_false(self):
+        utils.create_game(start_it=True)
+        r = self.client.get(path='/is_turn?game=john-peter-1&player=john')
+        d = simplejson.loads(r.content)
+
+        self.assertFalse(d['status'])
+        self.assertFalse('error' in d)
+
+    def test_true(self):
+        utils.create_game(start_it=True)
+        r = self.client.get(path='/is_turn?game=john-peter-1&player=peter')
+        d = simplejson.loads(r.content)
+
+        self.assertTrue(d['status'])
+        self.assertFalse('error' in d)

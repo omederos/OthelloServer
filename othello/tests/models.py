@@ -23,7 +23,7 @@ class GameTests(TestCase):
                                                ' Make sure both players have '
                                                'been connected')
 
-    def test_is_turn_non_existing_user(self):
+    def test_is_turn_non_existing_player(self):
         g = self.create_game()
         with self.assertRaises(Exception) as ex:
             g.is_turn('oscar')

@@ -116,7 +116,7 @@ class Game(models.Model):
         if not self.pk:
             self.game_started = False
             self.game_finished = False
-            self.player1_turn = False # Black ones start playing
+            self.player1_turn = False  # Black ones start playing
             self.board = INIT_BOARD
 
     def is_turn(self, player):

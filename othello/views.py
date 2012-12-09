@@ -36,6 +36,23 @@ def get_board(request):
     return ajax_response(board=g.board)
 
 
+def is_turn(request):
+    if request.method != 'GET':
+        return ajax_response(error='GET method should be used instead of POST')
+    if not 'game' in request.GET or not 'player' in request.GET:
+        return ajax_response(
+            error='Incorrect parameters. It should be: ' \
+                  'game=juan-pedro-1&player=pedro'
+        )
+
+    try:
+        result = Game.objects.is_turn(request.GET['game'],
+            request.GET['player'])
+        return ajax_response(status=result)
+    except Exception, e:
+        return ajax_response(error=e.message)
+
+
 def ajax_response(error=None, **kwargs):
     d = kwargs
     if error:

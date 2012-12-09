@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from othello.views import connect, get_board
+from othello.views import connect, get_board, is_turn
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -8,6 +8,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^connect', connect, name='connect'),
     url(r'^get_board', get_board, name='get_board'),
+    url(r'^is_turn', is_turn, name='is_turn'),
     # Example:
     # (r'^OthelloServer/', include('OthelloServer.foo.urls')),
 
