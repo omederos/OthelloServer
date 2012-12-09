@@ -81,7 +81,20 @@ class Game(models.Model):
         null=True, related_name='games_being_second_player')
     player1_turn = models.BooleanField(verbose_name='Player 1\'s Turn')
     board = models.CharField(max_length=64)
+    # Indica si el juego ya comenzo o no
     game_started = models.BooleanField()
+    # Momento en el que se llamo a 'is_turn' por el jugador que le tocaba jugar
+    timeout_is_turn = models.DateTimeField()
+    # Momento en que le toco jugar al proximo jugador
+    timeout_turn_change = models.DateTimeField()
+    # Guarda la cantidad de movimientos invalidos realizados por cada jugador
+    invalid_moves_player1 = models.IntegerField()
+    invalid_moves_player2 = models.IntegerField()
+    # Cantidad de fichas al finalizar el juego.
+    # Indica la puntuacion final del juego (ej. 63-1, 32-32, etc.)
+    score_player1 = models.IntegerField()
+    score_player2 = models.IntegerField()
+
     winner = models.ForeignKey(Player, blank=True, null=True,
         related_name='games_where_won')
 
