@@ -46,6 +46,10 @@ class GameManager(models.Manager):
         except:
             raise Exception('Game %s not found' % game_id)
 
+    def is_turn(self, game_id, player):
+        g = self.get_by_id(game_id)
+        return g.is_turn(player)
+
     def connect(self, p1, p2):
         """
         Connects the specified players to a game
