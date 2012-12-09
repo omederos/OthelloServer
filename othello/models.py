@@ -85,16 +85,16 @@ class Game(models.Model):
     # Indica si el juego ya comenzo o no
     game_started = models.BooleanField()
     # Momento en el que se llamo a 'is_turn' por el jugador que le tocaba jugar
-    timeout_is_turn = models.DateTimeField()
+    timeout_is_turn = models.DateTimeField(null=True)
     # Momento en que le toco jugar al proximo jugador
-    timeout_turn_change = models.DateTimeField()
+    timeout_turn_change = models.DateTimeField(null=True)
     # Guarda la cantidad de movimientos invalidos realizados por cada jugador
-    invalid_moves_player1 = models.IntegerField()
-    invalid_moves_player2 = models.IntegerField()
+    invalid_moves_player1 = models.IntegerField(default=0)
+    invalid_moves_player2 = models.IntegerField(default=0)
     # Cantidad de fichas al finalizar el juego.
     # Indica la puntuacion final del juego (ej. 63-1, 32-32, etc.)
-    score_player1 = models.IntegerField()
-    score_player2 = models.IntegerField()
+    score_player1 = models.IntegerField(default=0)
+    score_player2 = models.IntegerField(default=0)
 
     # Indica si el jugador que le toca jugar ya llamo a 'is_turn'
     is_turn_already_called = models.BooleanField()

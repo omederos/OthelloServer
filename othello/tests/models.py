@@ -1,12 +1,58 @@
 from django.test.testcases import TestCase
+import time
 from othello.models import *
 from othello.tests.utils import create_player, create_game
 
 
 class GameTests(TestCase):
+    def create_game(self, start_it=True):
+        g = create_game()
+        if start_it:
+            g.start_game()
+        return g
+
     def test_unicode(self):
-        g = Game.objects.create(player1='john1', player2='john2')
-        self.assertEqual(unicode(g), 'john1-john2-1')
+        g = self.create_game(False)
+        self.assertEqual(unicode(g), 'john-peter-1')
+
+    def test_is_turn_game_not_started_yet(self):
+        g = self.create_game(False)
+        with self.assertRaises(Exception) as ex:
+            g.is_turn('john')
+        self.assertEqual(ex.exception.message, 'The game hasn\'t started yet.'
+                                               ' Make sure both players have '
+                                               'been connected')
+
+    def test_is_turn_non_existing_user(self):
+        g = self.create_game()
+        with self.assertRaises(Exception) as ex:
+            g.is_turn('oscar')
+        self.assertEqual(ex.exception.message, 'The player oscar is not '
+                                               'playing in this game')
+
+    def test_is_turn_false(self):
+        g = self.create_game()
+        self.assertFalse(g.is_turn('john'))
+        self.assertIsNone(g.timeout_is_turn)
+        self.assertFalse(g.is_turn_already_called)
+
+    def test_is_turn_true(self):
+        g = self.create_game()
+        self.assertTrue(g.is_turn('peter'))
+        self.assertIsNotNone(g.timeout_is_turn)
+
+    def test_is_turn_timeout_saved_only_once(self):
+        g = self.create_game()
+        g.is_turn('peter')
+        self.assertTrue(g.is_turn_already_called)
+
+        d = g.timeout_is_turn
+        time.sleep(0.5)
+
+        g.is_turn('peter')
+
+        # Make sure the datetime stored was the very first one
+        self.assertEqual(d, g.timeout_is_turn)
 
 
 class GameManagerTests(TestCase):
