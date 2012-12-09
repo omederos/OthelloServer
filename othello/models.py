@@ -124,7 +124,6 @@ class Game(models.Model):
         Returns True if it is caller's turn
 
         """
-
         # Check if the game already started. It could happen that not both
         # players have been connected
         if not self.game_started:
@@ -159,6 +158,7 @@ class Game(models.Model):
         to the game correctly.
         """
         self.game_started = True
+        self.timeout_turn_change = datetime.now()
         self.save()
 
     def has_finished(self):
