@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 INIT_BOARD = '0000000000000000000000000001200000021000000000000000000000000000'
 
@@ -95,6 +96,9 @@ class Game(models.Model):
     score_player1 = models.IntegerField()
     score_player2 = models.IntegerField()
 
+    # Indica si el jugador que le toca jugar ya llamo a 'is_turn'
+    is_turn_already_called = models.BooleanField()
+
     winner = models.ForeignKey(Player, blank=True, null=True,
         related_name='games_where_won')
 
@@ -108,7 +112,40 @@ class Game(models.Model):
         if not self.pk:
             self.game_started = False
             self.game_finished = False
+            self.player1_turn = False # Black ones start playing
             self.board = INIT_BOARD
+
+    def is_turn(self, player):
+        """
+        Returns True if it is caller's turn
+
+        """
+
+        # Check if the game already started. It could happen that not both
+        # players have been connected
+        if not self.game_started:
+            raise Exception('The game hasn\'t started yet. Make sure both '
+                            'players have been connected')
+
+        if player == self.player1.name:
+            result = self.player1_turn
+        elif player == self.player2.name:
+            result = not self.player1_turn
+        else:
+            # If the name provided doesn't match with the name of the players
+            # of this game
+            raise Exception('The player %s is not playing in this game' %
+                            player)
+
+        # If this is the first time the player calls 'is_turn'
+        # and the caller is the one that plays now
+        if result and not self.is_turn_already_called:
+            # We save
+            self.is_turn_already_called = True
+            self.timeout_is_turn = datetime.now()
+            self.save()
+
+        return result
 
     def start_game(self):
         """
