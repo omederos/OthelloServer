@@ -133,6 +133,84 @@ class GameTests(TestCase):
         self.assertEqual(g.board,
             '0000000000010000000100002211111100010000000100000000000000000000')
 
+    def test_move_ok(self):
+        g = self.create()
+        self.assertFalse(g.player1_turn)
+        g.move('peter', '(3,2)')
+        g = Game.objects.get(id=1)
+        self.assertEqual(g.board,
+            '0000000000000000000000000022200000021000000000000000000000000000')
+        self.assertTrue(g.player1_turn)
+
+    def test_move_game_not_started(self):
+        g = self.create(start_it=False)
+        with self.assertRaises(Exception) as ex:
+            g.move('peter', '(3,2)')
+        self.assertEqual(ex.exception.message,
+            'The game hasn\'t started yet. Make sure both players have been '
+            'connected')
+
+    def test_move_game_already_finished(self):
+        g = self.create()
+        g.winner = g.player1
+        g.save()
+        with self.assertRaises(Exception) as ex:
+            g.move('peter', '(3,2)')
+        self.assertEqual(ex.exception.message, 'This game already finished')
+
+    def test_move_non_existing_player(self):
+        g = self.create()
+        with self.assertRaises(Exception) as ex:
+            g.move('oscar', '(3,2)')
+        self.assertEqual(ex.exception.message, 'The player oscar is not '
+                                               'playing in this game')
+
+    def test_move_not_in_the_turn(self):
+        g = self.create()
+        with self.assertRaises(Exception) as ex:
+            g.move('john', '(3,5)')
+        self.assertEqual(ex.exception.message, 'You must wait for your turn')
+
+    def test_move_invalid_first_one(self):
+        g = self.create()
+        with self.assertRaises(Exception) as ex:
+            g.move('peter', '(0,0)')
+        self.assertEqual(ex.exception.message, 'Invalid move')
+        g = Game.objects.get(id=1)
+        self.assertEqual(g.invalid_moves_player1, 0)
+        self.assertEqual(g.invalid_moves_player2, 1)
+
+        # Make sure it loses his turn
+        self.assertTrue(g.player1_turn)
+
+    def test_move_invalid_third_one(self):
+        g = self.create()
+        for i in xrange(3):
+            try:
+                g.player1_turn = False
+                g.save()
+                g.move('peter', '(0,0)')
+            except:
+                pass
+        g = Game.objects.get(id=1)
+        self.assertEqual(g.invalid_moves_player1, 0)
+        self.assertEqual(g.invalid_moves_player2, 3)
+
+        self.assertEqual(g.winner, g.player1)
+        self.assertTrue(g.game_finished())
+
+        self.assertEqual(g.score_player1, 63)
+        self.assertEqual(g.score_player2, 1)
+
+    def test_move_ok_keeps_playing(self):
+        g = self.create(
+        board='0002020200222220001201220001222000021222002021200200222020002200'
+        )
+        g.move('peter', '(1,1)')
+        g = Game.objects.get(id=1)
+        self.assertEqual(g.board,
+            '0002020202222220002201220002222000022222002022200200222020002200')
+        self.assertFalse(g.player1_turn)
 
 class GameManagerTests(TestCase):
     def test_create_non_existing_players(self):

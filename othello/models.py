@@ -126,7 +126,6 @@ class Game(models.Model):
         # TODO: Use post-save signal and check the 'created' flag
         if not self.pk:
             self.game_started = False
-            self.game_finished = False
             self.player1_turn = False  # Black ones start playing
             self.board = INIT_BOARD
 
@@ -184,7 +183,8 @@ class Game(models.Model):
         current_time = datetime.now()
 
         if player != self.player1.name and player != self.player2.name:
-            raise Exception('The player %s is not playing in this game')
+            raise Exception('The player %s is not playing in this game' %
+                            player)
 
         # p = self.player1 if player == self.player1.name else self.player2
         if not self._is_turn(player):
@@ -197,7 +197,7 @@ class Game(models.Model):
 
         # If the game already finished...
         if self.game_finished():
-            raise Exception('This game already finished' % move)
+            raise Exception('This game already finished')
 
         # If the game hasn't been started yet
         if not self.game_started:
@@ -218,7 +218,7 @@ class Game(models.Model):
                                 '\'is_turn\'' % timeout)
 
         # If the player didn't called is turn but waited more than 60 secs
-        timeout = (current_time - self.timeout_turn_change)
+        timeout = (current_time - self.timeout_turn_change).seconds
         if timeout >= TIMEOUT_TURN:
             # Turn over!
             self._change_turn(matrix, player)
@@ -373,6 +373,8 @@ class Game(models.Model):
         color = self.get_piece_color(player)
         if not self._is_cell_available(matrix, point, color):
             self._set_invalid_move(player)
+            # The player loses his turn
+            self._change_turn(matrix, player)
             raise Exception('Invalid move')
 
         self.update_board(matrix, player, point)
