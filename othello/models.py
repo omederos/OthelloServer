@@ -317,7 +317,6 @@ class Game(models.Model):
         self.player1_turn = not self.player1_turn
         self.save()
 
-
     def _set_invalid_move(self, player):
         if player == self.player1.name:
             self.invalid_moves_player1 += 1
@@ -341,15 +340,18 @@ class Game(models.Model):
 
     def update_board(self, matrix, player, move):
         color = self.get_piece_color(player)
-        # If the move is valid, then we need to flip the pieces...
         directions = list(self._get_directions(matrix, move, color))
         other_color = self._get_inverse_piece(color)
+
+        # Update the cell where the user played
+        matrix[move[0]][move[1]] = color
+
         for d in directions:
             k = 0
             while 1:
                 k += 1
                 x_new = move[0] + self.dx[d] * k
-                y_new = move[0] + self.dy[d] * k
+                y_new = move[1] + self.dy[d] * k
                 if matrix[x_new][y_new] == other_color:
                     matrix[x_new][y_new] = color
                 else:
@@ -362,7 +364,7 @@ class Game(models.Model):
         board = []
         for i, row in enumerate(matrix):
             for j, cell in enumerate(row):
-                board.append(cell)
+                board.append(str(cell))
         self.board = "".join(board)
         self.save()
 
@@ -395,10 +397,6 @@ class Game(models.Model):
             # Store the winner
             self.winner = self.player1 if white > black else self.player2
             self.save()
-
-
-    def has_finished(self):
-        return self.winner is not None
 
     def __unicode__(self):
         return '{0}-{1}-{2}'.format(
