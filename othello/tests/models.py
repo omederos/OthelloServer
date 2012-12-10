@@ -5,18 +5,26 @@ from othello.tests.utils import create_player, create_game
 
 
 class GameTests(TestCase):
-    def create_game(self, start_it=True):
+    def create(self, start_it=True, board=None):
         g = create_game()
         if start_it:
             g.start_game()
+        if board:
+            g.board = board
+            g.save()
         return g
 
+    def test_get_piece_color(self):
+        g = create_game()
+        self.assertEqual(g.get_piece_color('john'), WHITE)
+        self.assertEqual(g.get_piece_color('peter'), BLACK)
+
     def test_unicode(self):
-        g = self.create_game(False)
+        g = self.create(False)
         self.assertEqual(unicode(g), 'john-peter-1')
 
     def test_is_turn_game_not_started_yet(self):
-        g = self.create_game(False)
+        g = self.create(False)
         with self.assertRaises(Exception) as ex:
             g.is_turn('john')
         self.assertEqual(ex.exception.message, 'The game hasn\'t started yet.'
@@ -24,25 +32,26 @@ class GameTests(TestCase):
                                                'been connected')
 
     def test_is_turn_non_existing_player(self):
-        g = self.create_game()
+        g = self.create()
         with self.assertRaises(Exception) as ex:
             g.is_turn('oscar')
         self.assertEqual(ex.exception.message, 'The player oscar is not '
                                                'playing in this game')
 
     def test_is_turn_false(self):
-        g = self.create_game()
+        g = self.create()
+        timeout_is_turn = g.timeout_is_turn
         self.assertFalse(g.is_turn('john'))
-        self.assertIsNone(g.timeout_is_turn)
+        self.assertEqual(g.timeout_is_turn, timeout_is_turn)
         self.assertFalse(g.is_turn_already_called)
 
     def test_is_turn_true(self):
-        g = self.create_game()
+        g = self.create()
         self.assertTrue(g.is_turn('peter'))
         self.assertIsNotNone(g.timeout_is_turn)
 
     def test_is_turn_timeout_saved_only_once(self):
-        g = self.create_game()
+        g = self.create()
         g.is_turn('peter')
         self.assertTrue(g.is_turn_already_called)
 
@@ -53,6 +62,31 @@ class GameTests(TestCase):
 
         # Make sure the datetime stored was the very first one
         self.assertEqual(d, g.timeout_is_turn)
+
+    def test_get_possible_moves_1(self):
+        g = self.create(
+        board='1111011100210200000122200001200000022200002002000200000000000000'
+        )
+        moves = g.get_possible_moves(BLACK)
+        self.assertEqual(4, len(moves))
+        moves = g.get_possible_moves(WHITE)
+        self.assertEqual(8, len(moves))
+
+    def test_get_possible_moves_2(self):
+        g = self.create()
+        moves = g.get_possible_moves(BLACK)
+        self.assertEqual(4, len(moves))
+        moves = g.get_possible_moves(WHITE)
+        self.assertEqual(4, len(moves))
+
+    def test_get_possible_moves(self):
+        g = self.create(
+        board='0222222100000000000000000000000000000000000000000000000000000000'
+        )
+        moves = g.get_possible_moves(BLACK)
+        self.assertEqual(0, len(moves))
+        moves = g.get_possible_moves(WHITE)
+        self.assertEqual(1, len(moves))
 
 
 class GameManagerTests(TestCase):
