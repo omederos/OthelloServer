@@ -212,6 +212,13 @@ class GameTests(TestCase):
             '0002020202222220002201220002222000022222002022200200222020002200')
         self.assertFalse(g.player1_turn)
 
+    def test_move_timeout_turn_change_is_updated(self):
+        g = self.create()
+        timeout = g.timeout_turn_change
+        g.move('peter', '(3,2)')
+        g = Game.objects.get(id=1)
+        self.assertTrue(g.timeout_turn_change > timeout)
+
 
 class GameManagerTests(TestCase):
     def test_create_non_existing_players(self):
