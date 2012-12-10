@@ -65,7 +65,7 @@ class GameTests(TestCase):
 
     def test_get_possible_moves_1(self):
         g = self.create(
-        board='1111011100210200000122200001200000022200002002000200000000000000'
+    board='1111011100210200000122200001200000022200002002000200000000000000'
         )
         moves = g.get_possible_moves(BLACK)
         self.assertEqual(4, len(list(moves)))
@@ -81,7 +81,7 @@ class GameTests(TestCase):
 
     def test_get_possible_moves(self):
         g = self.create(
-        board='0222222100000000000000000000000000000000000000000000000000000000'
+    board='0222222100000000000000000000000000000000000000000000000000000000'
         )
         moves = g.get_possible_moves(BLACK)
         self.assertEqual(0, len(list(moves)))
@@ -90,45 +90,45 @@ class GameTests(TestCase):
 
     def test_update_board_one_line_horizontal(self):
         g = self.create(
-        board='0222222100000000000000000000000000000000000000000000000000000000'
+    board='0222222100000000000000000000000000000000000000000000000000000000'
         )
-        g.update_board(g._get_matrix(), 'john', (0,0))
+        g.update_board(g._get_matrix(), 'john', (0, 0))
         g = Game.objects.get(id=1)
         self.assertEqual(g.board,
             '1111111100000000000000000000000000000000000000000000000000000000')
 
     def test_update_board_one_line_vertical(self):
         g = self.create(
-        board='0000000000000000000000000000100000001000000020000000000000000000'
+    board='0000000000000000000000000000100000001000000020000000000000000000'
         )
-        g.update_board(g._get_matrix(), 'peter', (2,4))
+        g.update_board(g._get_matrix(), 'peter', (2, 4))
         g = Game.objects.get(id=1)
         self.assertEqual(g.board,
             '0000000000000000000020000000200000002000000020000000000000000000')
 
     def test_update_board_one_line_diagonal(self):
         g = self.create(
-        board='0000000000000000000100000000200000000200000000000000000000000000'
+    board='0000000000000000000100000000200000000200000000000000000000000000'
         )
-        g.update_board(g._get_matrix(), 'john', (5,6))
+        g.update_board(g._get_matrix(), 'john', (5, 6))
         g = Game.objects.get(id=1)
         self.assertEqual(g.board,
             '0000000000000000000100000000100000000100000000100000000000000000')
 
     def test_update_board_vertical_both_sides(self):
         g = self.create(
-        board='0000000000010000000200000000000000020000000100000000000000000000'
+    board='0000000000010000000200000000000000020000000100000000000000000000'
         )
-        g.update_board(g._get_matrix(), 'john', (3,3))
+        g.update_board(g._get_matrix(), 'john', (3, 3))
         g = Game.objects.get(id=1)
         self.assertEqual(g.board,
             '0000000000010000000100000001000000010000000100000000000000000000')
 
     def test_update_board_3_directions(self):
         g = self.create(
-        board='0000000000010000000200002210222100020000000100000000000000000000'
+    board='0000000000010000000200002210222100020000000100000000000000000000'
         )
-        g.update_board(g._get_matrix(), 'john', (3,3))
+        g.update_board(g._get_matrix(), 'john', (3, 3))
         g = Game.objects.get(id=1)
         self.assertEqual(g.board,
             '0000000000010000000100002211111100010000000100000000000000000000')
@@ -204,13 +204,14 @@ class GameTests(TestCase):
 
     def test_move_ok_keeps_playing(self):
         g = self.create(
-        board='0002020200222220001201220001222000021222002021200200222020002200'
+    board='0002020200222220001201220001222000021222002021200200222020002200'
         )
         g.move('peter', '(1,1)')
         g = Game.objects.get(id=1)
         self.assertEqual(g.board,
             '0002020202222220002201220002222000022222002022200200222020002200')
         self.assertFalse(g.player1_turn)
+
 
 class GameManagerTests(TestCase):
     def test_create_non_existing_players(self):

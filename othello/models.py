@@ -238,14 +238,14 @@ class Game(models.Model):
     dx = [-1, -1, -1, 0, 1, 1, 1, 0]
     dy = [-1, 0, 1, 1, 1, 0, -1, -1]
 
-    def _has_any_move_options(self, color, matrix = None):
+    def _has_any_move_options(self, color, matrix=None):
         try:
             self.get_possible_moves(color, matrix).next()
             return True
         except StopIteration:
             return False
 
-    def get_possible_moves(self, color, matrix = None):
+    def get_possible_moves(self, color, matrix=None):
         if not matrix:
             matrix = self._get_matrix()
         for i, row in enumerate(matrix):
