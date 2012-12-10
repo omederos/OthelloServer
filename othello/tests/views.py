@@ -131,3 +131,47 @@ class IsTurnTests(TestCase):
 
         self.assertTrue(d['status'])
         self.assertFalse('error' in d)
+
+
+class MoveTests(TestCase):
+    def test_GET_returns_error(self):
+        r = self.client.get(path='/move')
+        d = simplejson.loads(r.content)
+
+        self.assertEqual(d['error'], 'POST method should be used instead of '
+                                     'GET')
+        self.assertEqual(d['status'], 'failed')
+
+    def test_non_existing_player(self):
+        utils.create_game()
+        data = {'game': 'john-peter-1',
+                'player': 'oscar',
+                'move': '(3,2)'}
+        r = self.client.post(path='/move', data=data)
+        d = simplejson.loads(r.content)
+
+        self.assertEqual(d['error'], 'The player oscar is not playing in this'
+                                     ' game')
+        self.assertEqual(d['status'], 'failed')
+
+    def test_non_existing_game(self):
+        utils.create_game()
+        data = {'game': 'john-peter-3',
+                'player': 'peter',
+                'move': '(3,2)'}
+        r = self.client.post(path='/move', data=data)
+        d = simplejson.loads(r.content)
+
+        self.assertEqual(d['error'], 'Game john-peter-3 not found')
+        self.assertEqual(d['status'], 'failed')
+
+    def test_ok(self):
+        utils.create_game(start_it=True)
+        data = {'game': 'john-peter-1',
+                'player': 'peter',
+                'move': '(3,2)'}
+        r = self.client.post(path='/move', data=data)
+        d = simplejson.loads(r.content)
+
+        self.assertFalse('error' in d)
+        self.assertEqual(d['status'], 'succeed')

@@ -20,6 +20,5 @@ def create_game(player1=None, player2=None, start_it=False):
         player2=player2.name,
     )
     if start_it:
-        g.game_started = True
-        g.save()
+        g.start_game()
     return g

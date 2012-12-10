@@ -53,6 +53,28 @@ def is_turn(request):
         return ajax_response(error=e.message)
 
 
+def move(request):
+    if request.method != 'POST':
+        return ajax_response(error='POST method should be used instead of ' \
+                                   'GET', status='failed')
+    if not 'game' in request.POST or not 'player' in request.POST or not \
+        'move' in request.POST:
+        return ajax_response(
+            error='Incorrect parameters. It should be: '\
+                  'game=juan-pedro-1&player=juan&move=(x,y)'
+        )
+
+    try:
+        Game.objects.move(
+            request.POST['game'],
+            request.POST['player'],
+            request.POST['move']
+        )
+        # If it doesn't throw any exception, then it succeed!
+        return ajax_response(status='succeed')
+    except Exception, e:
+        return ajax_response(error=e.message, status='failed')
+
 def ajax_response(error=None, **kwargs):
     d = kwargs
     if error:

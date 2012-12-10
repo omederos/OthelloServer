@@ -61,6 +61,10 @@ class GameManager(models.Manager):
         g = self.get_by_id(game_id)
         return g.is_turn(player)
 
+    def move(self, game_id, player, move):
+        g = self.get_by_id(game_id)
+        g.move(player, move)
+
     def connect(self, p1, p2):
         """
         Connects the specified players to a game
