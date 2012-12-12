@@ -144,6 +144,9 @@ class Game(models.Model):
             raise Exception('The game hasn\'t started yet. Make sure both '
                             'players have been connected')
 
+        if self.game_finished():
+            raise Exception('This game already finished')
+
         result = self._is_turn(player)
 
         # If this is the first time the player calls 'is_turn'
@@ -154,7 +157,7 @@ class Game(models.Model):
             self.timeout_is_turn = datetime.now()
             self.save()
 
-        return result
+        return result, self.board
 
     def _is_turn(self, player):
         if player == self.player1.name:
@@ -209,14 +212,13 @@ class Game(models.Model):
                             ' both players have been connected')
 
         matrix = self._get_matrix()
-        self.is_turn_already_called = False
-        self.save()
 
         # If the player called 'is_turn' more than 15 secs ago
         if self.is_turn_already_called:
             timeout = (current_time - self.timeout_is_turn).seconds
             if timeout >= TIMEOUT_IS_TURN:
                 # Turn over!
+                self._set_invalid_move(player)
                 self._change_turn(matrix, player)
                 raise Exception('%s seconds ellapsed since you called '
                                 '\'is_turn\'' % timeout)
@@ -225,9 +227,14 @@ class Game(models.Model):
         timeout = (current_time - self.timeout_turn_change).seconds
         if timeout >= TIMEOUT_TURN:
             # Turn over!
+            self._set_invalid_move(player)
             self._change_turn(matrix, player)
             raise Exception('%s seconds ellapsed since the other player '
-                            'played, and you didn\'t call \'is_turn\'')
+                            'played, and you didn\'t call \'is_turn\'' %
+                            timeout)
+
+        self.is_turn_already_called = False
+        self.save()
 
         # The player can play!
         self._move_piece(matrix, player, point)
@@ -305,8 +312,11 @@ class Game(models.Model):
         return cell[0] < 0 or cell[0] >= 8 or cell[1] < 0 or cell[1] >= 8
 
     def _change_turn(self, matrix, old_player):
+        if self.game_finished():
+            pass
         # Update the time
         self.timeout_turn_change = datetime.now()
+        self.is_turn_already_called = False
         self.save()
 
         # Get the piece color of the player that made the last move
@@ -338,7 +348,6 @@ class Game(models.Model):
                                  MAX_INVALID_MOVES else 1
             self.winner = self.player1 if self.invalid_moves_player1 < \
                           MAX_INVALID_MOVES else self.player2
-            self.save()
 
         self.save()
 
@@ -396,7 +405,9 @@ class Game(models.Model):
                     black += 1
 
         # If the game finished
-        if white == 0 or black == 0 or white + black == 64:
+        if white == 0 or black == 0 or white + black == 64 or (
+            not self._has_any_move_options(WHITE, matrix) and
+            not self._has_any_move_options(BLACK, matrix)):
             # Store the score
             self.score_player1 = white
             self.score_player2 = black

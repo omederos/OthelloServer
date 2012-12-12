@@ -41,13 +41,17 @@ class GameTests(TestCase):
     def test_is_turn_false(self):
         g = self.create()
         timeout_is_turn = g.timeout_is_turn
-        self.assertFalse(g.is_turn('john'))
+        result = g.is_turn('john')
+        self.assertFalse(result[0])
+        self.assertEqual(result[1], g.board)
         self.assertEqual(g.timeout_is_turn, timeout_is_turn)
         self.assertFalse(g.is_turn_already_called)
 
     def test_is_turn_true(self):
         g = self.create()
-        self.assertTrue(g.is_turn('peter'))
+        result = g.is_turn('peter')
+        self.assertTrue(result[0])
+        self.assertEqual(result[1], g.board)
         self.assertIsNotNone(g.timeout_is_turn)
 
     def test_is_turn_timeout_saved_only_once(self):
@@ -219,6 +223,15 @@ class GameTests(TestCase):
         g = Game.objects.get(id=1)
         self.assertTrue(g.timeout_turn_change > timeout)
 
+    def test_move_game_finished_without_all_pieces(self):
+        g = self.create(
+    board='0221000000000000000000000000000000000000000000000000000000001000'
+        )
+        g.move('peter', '(0,4)')
+        g = Game.objects.get(id=1)
+        self.assertTrue(g.game_finished())
+        self.assertNotEqual(g.score_player1, 0)
+        self.assertNotEqual(g.score_player2, 0)
 
 class GameManagerTests(TestCase):
     def test_create_non_existing_players(self):

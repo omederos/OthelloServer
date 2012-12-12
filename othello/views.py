@@ -48,7 +48,7 @@ def is_turn(request):
     try:
         result = Game.objects.is_turn(request.GET['game'],
             request.GET['player'])
-        return ajax_response(status=result)
+        return ajax_response(status=result[0], board=result[1])
     except Exception, e:
         return ajax_response(error=e.message)
 
