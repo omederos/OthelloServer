@@ -1,7 +1,7 @@
 OthelloServer
 =============
 
-An Othello (or [Reversi][1]) server developed in Django (*for academical purposes*). 
+An Othello (or [Reversi][1]) server developed in Django (for academical purposes).
 
 It might contain some rules specific to our assignment, so feel free to modify it if you want.
 
@@ -46,7 +46,7 @@ This method will return `True` if it is `player`'s turn.
 
 #### Move
 
-This method should be called when a player wants to play. **POST** has to be used.
+This method should be called when a player wants to play. POST method has to be used.
 
 **Request:** `http://localhost/move`  
 **Data:** `game=john-mary-1&player=john&move=(3,2)`  
