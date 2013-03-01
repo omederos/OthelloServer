@@ -75,9 +75,8 @@ class GameManager(models.Manager):
         try:
         # Getting a game that hasn't been started with the specified players
             g = Game.objects.get(player1__name=p1,
-                player2__name=p2,
-                game_started=False
-            )
+                                 player2__name=p2,
+                                 game_started=False)
 
             # If the game already existed, then the other player is just
             # connecting to it
@@ -96,9 +95,11 @@ class Game(models.Model):
     Player1 play with WHITE discs and Player 2 with BLACK ones
     """
     player1 = models.ForeignKey(Player, verbose_name='Player 1', blank=True,
-        null=True, related_name='games_being_first_player')
+                                null=True,
+                                related_name='games_being_first_player')
     player2 = models.ForeignKey(Player, verbose_name='Player 2', blank=True,
-        null=True, related_name='games_being_second_player')
+                                null=True,
+                                related_name='games_being_second_player')
     player1_turn = models.BooleanField(verbose_name='Player 1\'s Turn')
     board = models.CharField(max_length=64)
     # Indica si el juego ya comenzo o no
@@ -119,7 +120,7 @@ class Game(models.Model):
     is_turn_already_called = models.BooleanField()
 
     winner = models.ForeignKey(Player, blank=True, null=True,
-        related_name='games_where_won')
+                               related_name='games_where_won')
 
     # Use the custom Mananger we created
     objects = GameManager()
@@ -288,10 +289,10 @@ class Game(models.Model):
 
                 # If we reached the borders of the board
                 if self._is_out_of_board((x_new, y_new)) or \
-                   matrix[x_new][y_new] == BLANK:
+                        matrix[x_new][y_new] == BLANK:
                     ok = False
                     break
-                # If we found the other piece we are looking for
+                    # If we found the other piece we are looking for
                 if matrix[x_new][y_new] == color:
                     ok = count > 0
                     break
@@ -314,7 +315,7 @@ class Game(models.Model):
     def _change_turn(self, matrix, old_player):
         if self.game_finished():
             pass
-        # Update the time
+            # Update the time
         self.timeout_turn_change = datetime.now()
         self.is_turn_already_called = False
         self.save()
@@ -340,14 +341,15 @@ class Game(models.Model):
         self.save()
 
         # If the maximum number of invalid moves was reached
-        if self.invalid_moves_player1 >= MAX_INVALID_MOVES or self\
-        .invalid_moves_player2 >= MAX_INVALID_MOVES:
-            self.score_player1 = 63 if self.invalid_moves_player1 < \
-                                 MAX_INVALID_MOVES else 1
-            self.score_player2 = 63 if self.invalid_moves_player2 < \
-                                 MAX_INVALID_MOVES else 1
-            self.winner = self.player1 if self.invalid_moves_player1 < \
-                          MAX_INVALID_MOVES else self.player2
+        if self.invalid_moves_player1 >= MAX_INVALID_MOVES or \
+                self.invalid_moves_player2 >= MAX_INVALID_MOVES:
+            self.score_player1 = 63 \
+                if self.invalid_moves_player1 < MAX_INVALID_MOVES else 1
+            self.score_player2 = 63 \
+                if self.invalid_moves_player2 < MAX_INVALID_MOVES else 1
+            self.winner = self.player1 \
+                if self.invalid_moves_player1 < MAX_INVALID_MOVES \
+                else self.player2
 
         self.save()
 
@@ -406,8 +408,8 @@ class Game(models.Model):
 
         # If the game finished
         if white == 0 or black == 0 or white + black == 64 or (
-            not self._has_any_move_options(WHITE, matrix) and
-            not self._has_any_move_options(BLACK, matrix)):
+                not self._has_any_move_options(WHITE, matrix) and
+                not self._has_any_move_options(BLACK, matrix)):
             # Store the score
             self.score_player1 = white
             self.score_player2 = black
@@ -434,10 +436,10 @@ class Game(models.Model):
 
 class Pair(models.Model):
     player1 = models.ForeignKey(Player,
-        related_name='pairs_being_first_player')
+                                related_name='pairs_being_first_player')
     player2 = models.ForeignKey(Player,
-        related_name='pairs_being_second_player')
+                                related_name='pairs_being_second_player')
     game1 = models.ForeignKey(Player, related_name='pairs1', blank=True,
-        null=True)
+                              null=True)
     game2 = models.ForeignKey(Player, related_name='pairs2', blank=True,
-        null=True)
+                              null=True)

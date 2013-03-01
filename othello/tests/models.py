@@ -68,9 +68,8 @@ class GameTests(TestCase):
         self.assertEqual(d, g.timeout_is_turn)
 
     def test_get_possible_moves_1(self):
-        g = self.create(
-    board='1111011100210200000122200001200000022200002002000200000000000000'
-        )
+        b = '1111011100210200000122200001200000022200002002000200000000000000'
+        g = self.create(board=b)
         moves = g.get_possible_moves(BLACK)
         self.assertEqual(4, len(list(moves)))
         moves = g.get_possible_moves(WHITE)
@@ -84,73 +83,80 @@ class GameTests(TestCase):
         self.assertEqual(4, len(list(moves)))
 
     def test_get_possible_moves(self):
-        g = self.create(
-    board='0222222100000000000000000000000000000000000000000000000000000000'
-        )
+        b = '0222222100000000000000000000000000000000000000000000000000000000'
+        g = self.create(board=b)
         moves = g.get_possible_moves(BLACK)
         self.assertEqual(0, len(list(moves)))
         moves = g.get_possible_moves(WHITE)
         self.assertEqual(1, len(list(moves)))
 
     def test_update_board_one_line_horizontal(self):
-        g = self.create(
-    board='0222222100000000000000000000000000000000000000000000000000000000'
-        )
+        b = '0222222100000000000000000000000000000000000000000000000000000000'
+        g = self.create(board=b)
         g.update_board(g._get_matrix(), 'john', (0, 0))
         g = Game.objects.get(id=1)
-        self.assertEqual(g.board,
-            '1111111100000000000000000000000000000000000000000000000000000000')
+        self.assertEqual(
+            g.board,
+            '1111111100000000000000000000000000000000000000000000000000000000'
+        )
 
     def test_update_board_one_line_vertical(self):
-        g = self.create(
-    board='0000000000000000000000000000100000001000000020000000000000000000'
-        )
+        b = '0000000000000000000000000000100000001000000020000000000000000000'
+        g = self.create(board=b)
         g.update_board(g._get_matrix(), 'peter', (2, 4))
         g = Game.objects.get(id=1)
-        self.assertEqual(g.board,
-            '0000000000000000000020000000200000002000000020000000000000000000')
+        self.assertEqual(
+            g.board,
+            '0000000000000000000020000000200000002000000020000000000000000000'
+        )
 
     def test_update_board_one_line_diagonal(self):
-        g = self.create(
-    board='0000000000000000000100000000200000000200000000000000000000000000'
-        )
+        b = '0000000000000000000100000000200000000200000000000000000000000000'
+        g = self.create(board=b)
         g.update_board(g._get_matrix(), 'john', (5, 6))
         g = Game.objects.get(id=1)
-        self.assertEqual(g.board,
-            '0000000000000000000100000000100000000100000000100000000000000000')
+        self.assertEqual(
+            g.board,
+            '0000000000000000000100000000100000000100000000100000000000000000'
+        )
 
     def test_update_board_vertical_both_sides(self):
-        g = self.create(
-    board='0000000000010000000200000000000000020000000100000000000000000000'
-        )
+        b = '0000000000010000000200000000000000020000000100000000000000000000'
+        g = self.create(board=b)
         g.update_board(g._get_matrix(), 'john', (3, 3))
         g = Game.objects.get(id=1)
-        self.assertEqual(g.board,
-            '0000000000010000000100000001000000010000000100000000000000000000')
+        self.assertEqual(
+            g.board,
+            '0000000000010000000100000001000000010000000100000000000000000000'
+        )
 
     def test_update_board_3_directions(self):
-        g = self.create(
-    board='0000000000010000000200002210222100020000000100000000000000000000'
-        )
+        b = '0000000000010000000200002210222100020000000100000000000000000000'
+        g = self.create(board=b)
         g.update_board(g._get_matrix(), 'john', (3, 3))
         g = Game.objects.get(id=1)
-        self.assertEqual(g.board,
-            '0000000000010000000100002211111100010000000100000000000000000000')
+        self.assertEqual(
+            g.board,
+            '0000000000010000000100002211111100010000000100000000000000000000'
+        )
 
     def test_move_ok(self):
         g = self.create()
         self.assertFalse(g.player1_turn)
         g.move('peter', '(3,2)')
         g = Game.objects.get(id=1)
-        self.assertEqual(g.board,
-            '0000000000000000000000000022200000021000000000000000000000000000')
+        self.assertEqual(
+            g.board,
+            '0000000000000000000000000022200000021000000000000000000000000000'
+        )
         self.assertTrue(g.player1_turn)
 
     def test_move_game_not_started(self):
         g = self.create(start_it=False)
         with self.assertRaises(Exception) as ex:
             g.move('peter', '(3,2)')
-        self.assertEqual(ex.exception.message,
+        self.assertEqual(
+            ex.exception.message,
             'The game hasn\'t started yet. Make sure both players have been '
             'connected')
 
@@ -207,13 +213,14 @@ class GameTests(TestCase):
         self.assertEqual(g.score_player2, 1)
 
     def test_move_ok_keeps_playing(self):
-        g = self.create(
-    board='0002020200222220001201220001222000021222002021200200222020002200'
-        )
+        b = '0002020200222220001201220001222000021222002021200200222020002200'
+        g = self.create(board=b)
         g.move('peter', '(1,1)')
         g = Game.objects.get(id=1)
-        self.assertEqual(g.board,
-            '0002020202222220002201220002222000022222002022200200222020002200')
+        self.assertEqual(
+            g.board,
+            '0002020202222220002201220002222000022222002022200200222020002200'
+        )
         self.assertFalse(g.player1_turn)
 
     def test_move_timeout_turn_change_is_updated(self):
@@ -224,18 +231,18 @@ class GameTests(TestCase):
         self.assertTrue(g.timeout_turn_change > timeout)
 
     def test_move_game_finished_without_all_pieces(self):
-        g = self.create(
-    board='0221000000000000000000000000000000000000000000000000000000001000'
-        )
+        b = '0221000000000000000000000000000000000000000000000000000000001000'
+        g = self.create(board=b)
         g.move('peter', '(0,4)')
         g = Game.objects.get(id=1)
         self.assertTrue(g.game_finished())
         self.assertNotEqual(g.score_player1, 0)
         self.assertNotEqual(g.score_player2, 0)
 
+
 class GameManagerTests(TestCase):
     def test_create_non_existing_players(self):
-        g = Game.objects.create(player1='john1', player2='john2')
+        Game.objects.create(player1='john1', player2='john2')
 
         # The game has to be created
         self.assertEqual(Game.objects.count(), 1)
@@ -252,7 +259,7 @@ class GameManagerTests(TestCase):
         self.assertFalse(g.game_started)
 
     def test_create_only_player_1(self):
-        g = Game.objects.create(player1='john1')
+        Game.objects.create(player1='john1')
 
         # The game has to be created
         self.assertEqual(Game.objects.count(), 1)
@@ -270,7 +277,7 @@ class GameManagerTests(TestCase):
     def test_create_both_players_existing(self):
         create_player(name='john1')
         create_player(name='john2')
-        g = Game.objects.create(player1='john1', player2='john2')
+        Game.objects.create(player1='john1', player2='john2')
 
         # The game has to be created
         self.assertEqual(Game.objects.count(), 1)
@@ -296,19 +303,19 @@ class GameManagerTests(TestCase):
     def test_get_by_id_game_id_does_not_match(self):
         create_game()
         with self.assertRaises(Exception) as ex:
-            g = Game.objects.get_by_id('john-peter-10')
+            Game.objects.get_by_id('john-peter-10')
         self.assertEqual(ex.exception.message, 'Game john-peter-10 not found')
 
     def test_get_by_id_players_in_reverse_order(self):
         create_game()
         with self.assertRaises(Exception) as ex:
-            g = Game.objects.get_by_id('peter-john-1')
+            Game.objects.get_by_id('peter-john-1')
         self.assertEqual(ex.exception.message, 'Game peter-john-1 not found')
 
     def test_get_by_id_players_do_not_match(self):
         create_game()
         with self.assertRaises(Exception) as ex:
-            g = Game.objects.get_by_id('pepe-juan-1')
+            Game.objects.get_by_id('pepe-juan-1')
         self.assertEqual(ex.exception.message, 'Game pepe-juan-1 not found')
 
     def test_connect(self):

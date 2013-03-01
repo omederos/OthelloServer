@@ -60,9 +60,9 @@ class GetBoardTests(TestCase):
         r = self.client.get(path='/get_board')
         d = simplejson.loads(r.content)
 
-        self.assertEqual(d['error'], 'Incorrect parameters. It should be: '
-                                     'game=juan-pedro-1'
-        )
+        self.assertEqual(d['error'],
+                         'Incorrect parameters. It should be: '
+                         'game=juan-pedro-1')
         self.assertFalse('board' in d)
 
     def test_no_existing_game(self):

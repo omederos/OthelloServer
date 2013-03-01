@@ -5,7 +5,8 @@ from othello.views import connect, get_board, is_turn, move
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^connect', connect, name='connect'),
     url(r'^get_board', get_board, name='get_board'),
     url(r'^is_turn', is_turn, name='is_turn'),

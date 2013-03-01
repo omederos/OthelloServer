@@ -7,21 +7,21 @@ TEMPLATE_DEBUG = DEBUG
 ROOT_PATH = abspath(dirname(__file__))
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+# ('Your Name', 'your_email@domain.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2',
         # 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': join(ROOT_PATH, 'othello.db3'),
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',     # Set to empty string for localhost
+        'USER': '',  # Not used with sqlite3.
+        'PASSWORD': '',  # Not used with sqlite3.
+        'HOST': '',  # Set to empty string for localhost
         # . Not used with sqlite3.
-        'PORT': '',     # Set to empty string for default. Not used with sqlite3.
+        'PORT': '',  # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -69,13 +69,13 @@ SECRET_KEY = 'e^plgj1x^))3w*&%y6(2pb!ax)8#rv5!tht1044ywz5j_t9vr%'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-#    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -84,7 +84,7 @@ ROOT_URLCONF = 'OthelloServer.urls'
 
 TEMPLATE_DIRS = (
     join(ROOT_PATH, 'media/templates'),
-    )
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
