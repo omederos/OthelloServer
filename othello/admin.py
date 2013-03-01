@@ -3,6 +3,7 @@
 from django.contrib import admin
 from othello.models import (Game, Player)
 
+
 class GameInline1(admin.StackedInline):
     model = Game
     fk_name = 'player1'
@@ -10,6 +11,7 @@ class GameInline1(admin.StackedInline):
     fields = ('score_player1', 'score_player2', 'winner')
     extra = 0
     verbose_name_plural = 'Games being 1st player'
+
 
 class GameInline2(admin.StackedInline):
     model = Game
@@ -19,8 +21,10 @@ class GameInline2(admin.StackedInline):
     extra = 0
     verbose_name_plural = 'Games being 2nd player'
 
+
 class PlayerAdmin(admin.ModelAdmin):
     inlines = [GameInline1, GameInline2]
+
 
 class GameAdmin(admin.ModelAdmin):
     list_display = ('player1', 'player2', 'game_started', 'score_player1',
